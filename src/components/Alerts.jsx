@@ -38,9 +38,9 @@ const ContenedorAlerta = styled.div`
 	p {
 
 		background: ${(props) => {
-			if(props.tipo === 'error'){
+			if(props.type === 'error'){
 				return theme.rojo;
-			} else if (props.tipo === 'exito') {
+			} else if (props.type === 'exito') {
 				return theme.verde;
 			} else {
 				return '#000';

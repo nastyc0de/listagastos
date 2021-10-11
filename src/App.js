@@ -1,6 +1,7 @@
 import {Helmet} from 'react-helmet';
 import ExpensesForm from './components/ExpensesForm';
 import Navbar from './components/Navbar';
+import TotalExpenses from './components/TotalExpenses';
 
 const App = () => {
   return (
@@ -10,6 +11,7 @@ const App = () => {
       </Helmet>
       <Navbar/>
       <ExpensesForm/>
+      <TotalExpenses/>
     </>
   );
 }

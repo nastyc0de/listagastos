@@ -6,9 +6,10 @@ import SelectCategories from '../components/SelectCategories';
 import DatePicker from './DatePicker';
 import {db} from '../firebase';
 import { addDoc, collection } from '@firebase/firestore';
-import fromUnixTime from 'date-fns/fromUnixTime';
+// import fromUnixTime from 'date-fns/fromUnixTime';
 import getUnixTime from 'date-fns/getUnixTime';
 import {useAuth}  from '../context/AuthContext';
+import Alerts from './Alerts';
 
 const ExpensesForm = () => {
     const {user} = useAuth();
@@ -18,6 +19,8 @@ const ExpensesForm = () => {
     });
     const [pickCategory, setPickCategory] = useState('Hogar');
     const [stateDate, setStateDate] = useState(new Date());
+    const [alertState, setAlertState] = useState(false);
+    const [alert, setAlert] = useState({});
     const {description, expense} = inputs;
     const expenseCollectionRef = collection(db, 'gastos')
     
@@ -33,15 +36,35 @@ const ExpensesForm = () => {
     }
     const handleSubmit = async(e) => {
         e.preventDefault()
-        
-        await addDoc(expenseCollectionRef,{
-            category: pickCategory,
-            date: getUnixTime(stateDate),
-            description: description,
-            expense: parseFloat(expense),
-            uidUser: user.uid
+        if (description !== '' && expense !== '') {
+            if(expense){
+                await addDoc(expenseCollectionRef,{
+                    category: pickCategory,
+                    date: getUnixTime(stateDate),
+                    description: description,
+                    expense: parseFloat(expense).toFixed(2),
+                    uidUser: user.uid    
+                });
+                setInputs({
+                    description:'',
+                    expense:''
+                })
+                setPickCategory('Hogar');
+                setStateDate(new Date());
+                setAlertState(true);
+                setAlert({type:'exito', msg:'El gasto se agrego correctamente'})
+
+
+            } else {
+                setAlertState(true);
+                setAlert({type:'error', msg:'El valor que ingresaste no es correcto'})
+            }
             
-        });
+        } else {
+            setAlertState(true);
+            setAlert({type:'error', msg:'Agrega los campos faltantes'});
+            
+        }
 
     }
     return (
@@ -80,7 +103,12 @@ const ExpensesForm = () => {
                     Agregar Gasto <IconoPlus/>
                 </Boton>
             </ContenedorBoton>
-
+            <Alerts
+                type={alert.type}
+                msg={alert.msg}
+                alertState={alertState}
+                changeAlertState={setAlertState}
+            />
         </Formulario>
     )
 }
