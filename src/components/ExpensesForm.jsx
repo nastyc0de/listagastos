@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Boton } from './Boton'
 import { ContenedorBoton, ContenedorFiltros, Formulario, Input, InputGrande } from './Forms'
 import { ReactComponent as IconoPlus } from '../images/plus.svg';
@@ -11,7 +11,7 @@ import getUnixTime from 'date-fns/getUnixTime';
 import {useAuth}  from '../context/AuthContext';
 import Alerts from './Alerts';
 
-const ExpensesForm = () => {
+const ExpensesForm = ({editExpense}) => {
     const {user} = useAuth();
     const [inputs, setInputs] = useState({
         description:'',
@@ -23,6 +23,16 @@ const ExpensesForm = () => {
     const [alert, setAlert] = useState({});
     const {description, expense} = inputs;
     const expenseCollectionRef = collection(db, 'gastos')
+    
+    useEffect(() => {
+        if(editExpense){
+            if(editExpense.uidUser === user.uid){
+
+            }else{
+
+            }
+        }
+    }, [editExpense, user])
     
     const handleChange = (e) => {
         const {name, value} = e.target
@@ -42,7 +52,7 @@ const ExpensesForm = () => {
                     category: pickCategory,
                     date: getUnixTime(stateDate),
                     description: description,
-                    expense: parseFloat(expense).toFixed(2),
+                    expense: parseFloat(expense),
                     uidUser: user.uid    
                 });
                 setInputs({
